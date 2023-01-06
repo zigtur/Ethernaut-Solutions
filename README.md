@@ -28,5 +28,34 @@ This coin flip smart contract needs to use a random value. To do so, it uses the
 ## Telephone
 The contract require that tx.origin != msg.sender to change owner. This can be easily done using a smart contract to call this function.
 
+## Token
+The token contract is vulnerable to an integer underflow. If we have 20 tokens, we can ask to send 21 tokens. Our balance would be -1 if it was a signed integer. As it is unsigned, -1 corresponds to the larger number allowed by the uint256 format.
+
+## Delegation
+The objective is to gain ownership of the Delegation contract. To do so, we can exploit the delegatecall. The official Solidity documentation says : 
+```
+"There exists a special variant of a message call, named delegatecall which is identical to a message call apart from the fact that the code at the target address is executed in the context (i.e. at the address) of the calling contract and msg.sender and msg.value do not change their values."
+```
+So we can call the pwn function from Delegate contract, but in the context of the Delegation contract. This allows us to take ownership of the contract.
+
+
+## Force
+The goal is to make the balance of the contract greater than zero. To do so, we will use the selfdestruct of another contract to make the balance non-zero.
+
+
+## Vault
+Even if a variable is private, all the datas are public in Ethereum. So we can read the private password and unlock the contract.
+
+## King
+This contract does send the prize to the king of the contract. If the king is a smart contract that revert when it receives funds, the king will never change.
+
+## Re-entrancy
+On this contract, the vulnerability is that the withdraw function does send the funds before getting the balance updated. Using an attacker smart contract, a re-entrancy attack is possible.
+
+
+## Elevator
+Here, the objective is to set the top variable to true. To do so, it calls the msg.sender to know if top is true or false. We have to develop a smart contract with a isLastFloor() function that returns false during the first call, then true to the second call.
+
+
 
 
