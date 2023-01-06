@@ -56,6 +56,27 @@ On this contract, the vulnerability is that the withdraw function does send the 
 ## Elevator
 Here, the objective is to set the top variable to true. To do so, it calls the msg.sender to know if top is true or false. We have to develop a smart contract with a isLastFloor() function that returns false during the first call, then true to the second call.
 
+## Privacy
+The objective is to unlock the contract. We need to know the key to do this.
+Reading the storage of the smart contract will be done using web3.eth.getStorageAt(). We need to deeply understand how smart contracts store data to find the result.
+Here is a picture that explains what data should be read :
 
+![Privacy contract storage](images/Privacy.png)
+
+## Gatekeeper One
+
+TODO
+
+## Gatekeeper Two
+
+TODO
+
+## Naught Coin
+This contract locks the transfer function for 10 years. But it is possible to use the approve() and transferFrom() to transfer funds.
+
+
+
+## Preservation
+We are going to exploit delegatecall(). First, we can see that the LibraryContract does modify the first storage slot, which is the address of the library in the context of the vulnerable contract. So, we are able to modify this address to set it to an attacker contract. Our attacker contract will modify the third slot, to modify the owner address.
 
 
