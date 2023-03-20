@@ -17,10 +17,11 @@ So, we need to :
  2. call the receive function (by sending some ether)
  3. call the withdraw function
 
-
+```
 contract.contribute({value: toWei("0.001")});
 contract.send({value: toWei("0.001")});
 contract.withdraw();
+```
 
 ## Fallout
 The function Fal1out() allows the sender to become the owner of the contract. It is a typographical error, and the comment let us think that it is the constructor function.
