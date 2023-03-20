@@ -80,3 +80,9 @@ This contract locks the transfer function for 10 years. But it is possible to us
 We are going to exploit delegatecall(). First, we can see that the LibraryContract does modify the first storage slot, which is the address of the library in the context of the vulnerable contract. So, we are able to modify this address to set it to an attacker contract. Our attacker contract will modify the third slot, to modify the owner address.
 
 
+## Recovery
+TODO
+
+
+## Magic Number
+
