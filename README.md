@@ -86,3 +86,12 @@ TODO
 
 ## Magic Number
 
+## Alien Codex
+
+## Denial
+
+
+## Shop
+Here the vulnerable contract calls the Buyer 2 times. It is simple. For first call, the price() function returned value will be 100, the second time it will be < 100.
+
+
