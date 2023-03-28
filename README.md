@@ -89,7 +89,7 @@ TODO
 ## Alien Codex
 
 ## Denial
-
+As we can set any withdraw partner, we can create a contract that will be a partner and receive 1% of the contract ether balance. We just have to create an infinite loop in the receive function. And so, ether will be locked in contract for ever!
 
 ## Shop
 Here the vulnerable contract calls the Buyer 2 times. It is simple. For first call, the price() function returned value will be 100, the second time it will be < 100.
