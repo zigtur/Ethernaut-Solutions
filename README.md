@@ -81,7 +81,8 @@ We are going to exploit delegatecall(). First, we can see that the LibraryContra
 
 
 ## Recovery
-TODO
+
+This one is pretty simple. Go to the blockchain explorer (like Etherscan) and go to the Recovery contract. In the internal functions, you should see a contract creation (which is the Token contract). Take the address, and call the destroy function with your address as parameter.
 
 
 ## Magic Number
@@ -93,5 +94,12 @@ As we can set any withdraw partner, we can create a contract that will be a part
 
 ## Shop
 Here the vulnerable contract calls the Buyer 2 times. It is simple. For first call, the price() function returned value will be 100, the second time it will be < 100.
+
+## Dex
+TODO
+
+
+## Dex Two
+Looking at the swap function, we can see that the function does not verify that `from` is token1 or token2. So, we can create our own ERC20 Token to manipulate the Dex.
 
 

