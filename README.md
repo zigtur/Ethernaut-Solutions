@@ -64,8 +64,10 @@ Here is a picture that explains what data should be read :
 ![Privacy contract storage](images/Privacy.png)
 
 ## Gatekeeper One
-
-TODO
+Here, we do need to:
+- use a contract to get msg.sender != tx.origin
+- cast the tx.origin to different type to complete all checks: To do so, we identify that uint32(num) == uint16(num) != uint64(num) == uint16(uint160(tx.origin))
+- find the right amount of gas: we just have to brute force to find the right amount of gas, so check `gasleft() % 8191 == 0` will pass.
 
 ## Gatekeeper Two
 

