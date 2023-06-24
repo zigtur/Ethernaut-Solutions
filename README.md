@@ -111,5 +111,8 @@ TODO
 Looking at the swap function, we can see that the function does not verify that `from` is token1 or token2. So, we can create our own ERC20 Token to manipulate the Dex.
 
 ## Puzzle Wallet
+Here, we can see in multicall that we are able to call deposit two times. This will increase our balance in contract, and we will be able to drain funds that we didn't deposit.
 
+## Motorbike
+Here, our goal is to selfdestruct the engine of the motorbike. The motorbike contract uses delegatecall, and has called the `initialize()` function of the implementation in constructor. But, the implementation has not been initialized. So, as an attacker, we can initialize the implementation and upgrade it to an attacker contract. Then, as it delegatecalls, we are able to selfdestruct the contract.
 
